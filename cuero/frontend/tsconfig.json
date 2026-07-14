@@ -14,7 +14,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* ESTA LÍNEA QUITA EL ROJO EN EL ENV */
+    /* ESTA LÍNEA DEBE ESTAR PRESENTE PARA QUITAR EL ROJO EN EL ENV */
     "types": ["vite/client"],
 
     /* Linting */

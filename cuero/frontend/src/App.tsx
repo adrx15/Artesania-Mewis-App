@@ -1,29 +1,27 @@
-import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import { Catalog } from './pages/Catalog';
+import { ProductDetail } from './pages/ProductDetail';
+import { Suggestions } from './pages/Suggestions';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export default function App() {
   return (
-    <div style={{ 
-      padding: '40px', 
-      fontFamily: 'system-ui, sans-serif', 
-      textAlign: 'center',
-      backgroundColor: '#f9f9f9',
-      minHeight: '100vh',
-      color: '#333'
-    }}>
-      <h1 style={{ color: '#8b5a2b' }}>✨ ¡Taller de Cuero Levantado! ✨</h1>
-      <p style={{ fontSize: '18px' }}>Si estás viendo este mensaje, tu servidor React y Vite están configurados al 100%.</p>
-      
-      <div style={{ 
-        marginTop: '30px', 
-        padding: '20px', 
-        background: '#fff', 
-        borderRadius: '8px', 
-        boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-        display: 'inline-block' 
-      }}>
-        <p>🟢 <strong>Backend:</strong> Conectado exitosamente en el puerto 5000</p>
-        <p>🟢 <strong>Base de datos:</strong> MongoDB Atlas ("tienda-cuero") activa</p>
+    <Router>
+      <div style={{ backgroundColor: '#fcf8f2', minHeight: '100vh', margin: 0, padding: 0 }}>
+        {/* Barra de navegación global */}
+        <Navbar />
+
+        {/* Contenedor de páginas dinámicas */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+          <Routes>
+            <Route path="/" element={<Catalog />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/sugerencias" element={<Suggestions />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }

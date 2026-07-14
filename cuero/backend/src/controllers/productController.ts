@@ -12,19 +12,32 @@ export const createProduct = async (req: Request, res: Response) => {
     }
 };
 
-// READ: Obtener un producto por ID e incrementar analíticas (viewsCount) de forma atómica
+// READ: Obtener todos los productos (con filtro opcional por categoría)
+export const getProducts = async (req: Request, res: Response) => {
+    try {
+        const { category } = req.query;
+        let filter: any = {};
+        if (category) filter.category = category;
+
+        const products = await Product.find(filter).sort({ createdAt: -1 });
+        res.json(products);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error al recuperar el catálogo.', error: error.message });
+    }
+};
+
+// READ: Obtener un producto por ID e incrementar analíticas de forma atómica
 export const getProductById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         
-        // Validación rápida para evitar que colapse Mongoose si envían un string común
         if (id.length !== 24) {
             return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
 
         const product = await Product.findByIdAndUpdate(
             id,
-            { $inc: { viewsCount: 1 } }, // Incremento atómico solicitado por el administrador
+            { $inc: { viewsCount: 1 } },
             { new: true, runValidators: true }
         );
 
@@ -37,45 +50,49 @@ export const getProductById = async (req: Request, res: Response) => {
     }
 };
 
-// READ: Filtrar catálogo por categorías o promociones activas
-export const getProducts = async (req: Request, res: Response) => {
+// UPDATE: Modificar un artículo de cuero existente (incluyendo subdocumentos)
+export const updateProduct = async (req: Request, res: Response) => {
     try {
-        const { category } = req.query;
-        let filter: any = {};
-        if (category) filter.category = category;
+        const { id } = req.params;
 
-        const products = await Product.find(filter).sort({ createdAt: -1 });
-        
-        // SI TU BASE DE DATOS EN ATLAS ESTÁ VACÍA TODAVÍA:
-        // Enviamos un producto de prueba controlado para que el frontend levante de inmediato
-        if (products.length === 0) {
-            return res.json([
-                {
-                    _id: "660000000000000000000001",
-                    name: "Billetera de Cuero Genuino",
-                    description: "Fabricada artesanalmente con costuras reforzadas en hilo encerado. Espacio para 6 tarjetas y billetes.",
-                    category: "Bolsos",
-                    price: 18990,
-                    stock: 5,
-                    viewsCount: 12,
-                    promotions: { isPromoted: true, discountPercentage: 10 }
-                },
-                {
-                    _id: "660000000000000000000002",
-                    name: "Cinturón de Suela Tradicional",
-                    description: "Hecho a mano en Olmué con hebilla de bronce envejecido. Ideal para alta durabilidad.",
-                    category: "Cinturones",
-                    price: 24500,
-                    stock: 3,
-                    viewsCount: 25,
-                    promotions: { isPromoted: false, discountPercentage: 0 }
-                }
-            ]);
+        if (id.length !== 24) {
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
         }
 
-        res.json(products);
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true, runValidators: true } // 'new: true' devuelve el documento modificado; 'runValidators' aplica el esquema
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'No se encontró el producto para actualizar.' });
+        }
+
+        res.json(updatedProduct);
     } catch (error: any) {
-        res.status(500).json({ message: 'Error al recuperar el catálogo.', error: error.message });
+        res.status(400).json({ message: 'Error al actualizar el producto.', error: error.message });
+    }
+};
+
+// DELETE: Eliminar un artículo de cuero de forma física
+export const deleteProduct = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        if (id.length !== 24) {
+            return res.status(400).json({ message: 'Formato de ID inválido.' });
+        }
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
+        if (!deletedProduct) {
+            return res.status(404).json({ message: 'No se encontró el producto para eliminar.' });
+        }
+
+        res.json({ message: 'Producto eliminado exitosamente del catálogo.', id });
+    } catch (error: any) {
+        res.status(500).json({ message: 'Error al intentar eliminar el producto.', error: error.message });
     }
 };
 

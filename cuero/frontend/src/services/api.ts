@@ -1,6 +1,6 @@
+/// <reference types="vite/client" />
 import axios from 'axios';
 
-// Asegúrate de que NO tenga una barra '/' al final de la ruta base
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
@@ -11,11 +11,13 @@ const api = axios.create({
 });
 
 export const productService = {
-    // CAMBIO AQUÍ: Asegúrate de que sea '/products' y no '/products/'
     getAll: (category?: string) => api.get(`/products${category ? `?category=${category}` : ''}`),
     getById: (id: string) => api.get(`/products/${id}`),
     search: (query: string) => api.get(`/products/search?query=${query}`),
     getMostViewed: () => api.get('/products/analytics/most-viewed'),
+    create: (data: any) => api.post('/products', data),
+    update: (id: string, data: any) => api.put(`/products/${id}`, data), // <-- AGREGADO PARA EL UPDATE
+    delete: (id: string) => api.delete(`/products/${id}`),               // <-- AGREGADO PARA EL DELETE
 };
 
 export const suggestionService = {
