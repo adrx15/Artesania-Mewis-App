@@ -3,20 +3,23 @@ import {
     createProduct, 
     getProducts, 
     getProductById, 
-    searchProducts, 
-    getMostViewedProducts 
-} from '../controllers/productController';
+    updateProduct, 
+    deleteProduct,
+    searchProducts,
+    getMostViewedProducts
+} from '../controllers/productController'; // Ajusta la ruta a tu controlador
 
 const router = Router();
 
-// 1. Las rutas fijas siempre deben ir primero
-router.get('/', getProducts);
+// Rutas de búsqueda y métricas (deben ir arriba para evitar conflictos con /:id)
 router.get('/search', searchProducts);
 router.get('/analytics/most-viewed', getMostViewedProducts);
 
-// 2. Las rutas con parámetros dinámicos (/:id) siempre van al final
-router.get('/:id', getProductById);
-
-router.post('/', createProduct);
+// Rutas CRUD estándar
+router.post('/', createProduct);          // CREATE
+router.get('/', getProducts);             // READ (Todos)
+router.get('/:id', getProductById);       // READ (Detalle)
+router.put('/:id', updateProduct);        // UPDATE (Reemplazo o actualización)
+router.delete('/:id', deleteProduct);     // DELETE
 
 export default router;

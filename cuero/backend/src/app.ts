@@ -18,9 +18,9 @@ connectDB();
 // Middlewares de seguridad globales
 app.use(helmet());
 
-// CAMBIO AQUÍ: Configuración explícita de CORS para tu entorno de desarrollo local
+// Configuración explícita de CORS para entorno de desarrollo local
 app.use(cors({
-    origin: 'http://localhost:5173', // El puerto exacto donde corre tu frontend en React con Vite
+    origin: 'http://localhost:5173', // El puerto exacto donde corre el frontend en React con Vite
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true
 }));
