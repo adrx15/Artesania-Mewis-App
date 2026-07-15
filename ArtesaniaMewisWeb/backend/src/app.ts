@@ -17,18 +17,26 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://artesania-mewis-app-hsph.vercel.app'
+  'https://artesania-mewis-app-hsph.vercel.app',
 ];
 
 app.use(
   cors({
     origin(origin, callback) {
-      // Permite Postman, Render Health Checks, etc.
       if (!origin) {
         return callback(null, true);
       }
 
+      // Permite localhost
       if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Permite cualquier Preview Deployment de Vercel
+      if (
+        origin.endsWith('.vercel.app') &&
+        origin.includes('artesania-mewis-app-hsph')
+      ) {
         return callback(null, true);
       }
 
@@ -36,7 +44,7 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
