@@ -11,19 +11,39 @@ const api = axios.create({
 });
 
 export const productService = {
-    getAll: (category?: string) => api.get(`/products${category ? `?category=${category}` : ''}`),
-    getById: (id: string) => api.get(`/products/${id}`),
-    search: (query: string) => api.get(`/products/search?query=${query}`),
-    getMostViewed: () => api.get('/products/analytics/most-viewed'),
-    create: (data: any) => api.post('/products', data),
-    update: (id: string, data: any) => api.put(`/products/${id}`, data), // <-- AGREGADO PARA EL UPDATE
-    delete: (id: string) => api.delete(`/products/${id}`),               // <-- AGREGADO PARA EL DELETE
+    getAll: (category?: string) =>
+        api.get(`/api/products${category ? `?category=${category}` : ''}`),
+
+    getById: (id: string) =>
+        api.get(`/api/products/${id}`),
+
+    search: (query: string) =>
+        api.get(`/api/products/search?query=${query}`),
+
+    getMostViewed: () =>
+        api.get('/api/products/analytics/most-viewed'),
+
+    create: (data: any) =>
+        api.post('/api/products', data),
+
+    update: (id: string, data: any) =>
+        api.put(`/api/products/${id}`, data),
+
+    delete: (id: string) =>
+        api.delete(`/api/products/${id}`),
 };
 
 export const suggestionService = {
-    create: (data: { clientName: string; email: string; message: string }) => api.post('/suggestions', data),
-    getAll: () => api.get('/suggestions'),
-    markAsRead: (id: string) => api.patch(`/suggestions/${id}/read`),
+    create: (data:any) =>
+        api.post('/api/suggestions', data),
+
+    getAll: () =>
+        api.get('/api/suggestions'),
+
+    markAsRead: (id: string) =>
+        api.patch(`/api/suggestions/${id}/read`),
 };
+
+
 
 export default api;

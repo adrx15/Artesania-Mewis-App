@@ -19,10 +19,22 @@ connectDB();
 app.use(helmet());
 
 // Configuración explícita de CORS para entorno de desarrollo local
+const allowedOrigins = [
+  "http://localhost:5173",
+  "artesania-mewis-app-l97i.vercel.app"
+];
+
 app.use(cors({
-    origin: 'artesania-mewis-app-wkte.vercel.app', // El puerto exacto donde corre el frontend en React con Vite
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    credentials: true
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    callback(new Error("Origen no permitido por CORS"));
+  },
+  credentials: true,
 }));
 
 app.use(express.json());
