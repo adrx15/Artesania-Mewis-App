@@ -20,7 +20,7 @@ app.use(helmet());
 
 // Configuración explícita de CORS para entorno de desarrollo local
 app.use(cors({
-    origin: 'http://localhost:5173', // El puerto exacto donde corre el frontend en React con Vite
+    origin: 'artesania-mewis-app-wkte.vercel.app', // El puerto exacto donde corre el frontend en React con Vite
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true
 }));
