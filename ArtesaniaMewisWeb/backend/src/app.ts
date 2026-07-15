@@ -1,58 +1,59 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { connectDB } from './config/db';
+
 import productRoutes from './routes/productRoutes';
 import suggestionRoutes from './routes/suggestionRoutes';
+import {connectDB} from './config/db';
 
-// Configuración de variables de entorno
 dotenv.config();
 
-const app: Application = express();
-const PORT = process.env.PORT || 5000;
+const app = express();
 
-// Conexión estricta a base de datos NoSQL
-connectDB();
+// ======================
+// CORS
+// ======================
 
-// Middlewares de seguridad globales
-app.use(helmet());
-
-// Configuración explícita de CORS para entorno de desarrollo local
 const allowedOrigins = [
-  "http://localhost:5173",
-  "artesania-mewis-app-l97i.vercel.app"
+  'http://localhost:5173',
+  'https://artesania-mewis-app-hsph.vercel.app'
 ];
 
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Permite Postman, Render Health Checks, etc.
+      if (!origin) {
+        return callback(null, true);
+      }
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
 
-    callback(new Error("Origen no permitido por CORS"));
-  },
-  credentials: true,
-}));
+      return callback(new Error(`Origen no permitido: ${origin}`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
 
+// ======================
+
+app.use(helmet());
 app.use(express.json());
 
-// Declaración de Endpoints base de la API REST
+// Rutas
 app.use('/api/products', productRoutes);
 app.use('/api/suggestions', suggestionRoutes);
 
-// Middleware global para manejo de errores de infraestructura y código
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    console.error('Manejador de Errores Global:', err.stack);
-    res.status(500).json({
-        message: 'Ocurrió un error interno en el servidor.',
-        error: process.env.NODE_ENV === 'development' ? err.message : {}
-    });
-});
+// Conexión a MongoDB
+connectDB();
 
-// Encendido del servidor
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`Servidor de la API corriendo exitosamente en el puerto ${PORT}`);
+  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
